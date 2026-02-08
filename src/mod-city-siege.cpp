@@ -56,6 +56,11 @@
 #include "TravelMgr.h"
 #endif
 
+// Conditional include for individual progression
+#if __has_include ("IndividualProgression.h")
+#include "IndividualProgression.h"
+#endif
+
 using namespace Acore::ChatCommands;
 
 // Custom check and searcher for finding creatures by entry without needing WorldObject reference
@@ -958,6 +963,83 @@ void BroadcastPositionUpdate(const SiegeEvent& event, ObjectGuid guid, float x, 
     }
 }
 
+
+/**
+ * @brief Checks if the given player is a bot.
+ *
+ * This function checks if the provided Player pointer is valid and if it has an associated PlayerbotAI instance
+ * that indicates it is a bot. It returns true if the player is a bot, false otherwise.
+ *
+ * @param player Pointer to the Player object to check.
+ * @return true if the player is a bot, false otherwise.
+ */
+static bool IsPlayerBot(Player* player)
+{
+    if (!player)
+    {
+        return false;
+    }
+    PlayerbotAI* botAI = sPlayerbotsMgr.GetPlayerbotAI(player);
+    return botAI && botAI->IsBotAI();
+}
+/**
+* @brief Return the progression level of a specific player
+* @param player Pointer to the player whose progression returned
+*/
+#ifdef AZEROTHCORE_INDIVIDUALPROGRESSION_H
+uint8 GetPlayerProgression(Player* player)
+{
+    uint8 progressionLevel = 0;
+    if (!sWorld->getBoolConfig(CONFIG_PLAYER_SETTINGS_ENABLED))
+    {
+        return 0; // Prevent crash if player settings are not enabled
+    }
+    QueryResult result = CharacterDatabase.Query("SELECT `data` FROM `character_settings` WHERE `source` = 'mod-individual-progression' AND `guid` IN (SELECT `guid` FROM `characters` WHERE `name` = {});", player->GetPlayerName());
+    if (result)
+    {
+        do
+        {
+            std::string dataOne;
+            std::stringstream dataString((*result)[0].Get<std::string>());
+            dataString>>dataOne;
+            uint8 resultValue = atoi(dataOne.c_str());
+            if (resultValue > progressionLevel)
+            {
+                progressionLevel = resultValue;
+            }
+        } while (result->NextRow());
+    }
+    return progressionLevel;
+}
+#endif
+
+/**
+* @brief Return the highest progression reached by a currently online player.
+*/
+#ifdef AZEROTHCORE_INDIVIDUALPROGRESSION_H
+uint8 GetHighestOnlineProgression()
+{
+    uint8 currentProgression = 0;
+
+    //get list of players
+    const auto& allPlayers = ObjectAccessor::GetPlayers();
+    
+    for (auto const& itr : allPlayers)
+    {
+        Player* player = itr.second;
+        if (!player || !player->IsInWorld())
+            continue;
+        if (IsPlayerBot(player))
+            continue; // Filter out bots (only real players).
+
+        uint8 prog = GetPlayerProgression(player);
+        if (prog > currentProgression)
+            currentProgression = prog;
+    }
+    return currentProgression;
+}
+#endif
+
 /**
  * @brief Spawns siege creatures for a city siege event.
  * @param event The siege event to spawn creatures for.
@@ -985,11 +1067,53 @@ void SpawnSiegeCreatures(SiegeEvent& event)
     // Define creature entries based on city faction
     // If it's an Alliance city, spawn Horde attackers (and vice versa)
     bool isAllianceCity = (event.cityId <= CITY_EXODAR);
-    
+
+
+    // If individual progression is installed, make note of the current expansion.
+    // NOTE: quantising progression to expansion to give myself less work. In theory, you could have a different strength city raid for each progression stage.
+    uint8 expansion = 2; // default to WOTLK
+    #ifdef AZEROTHCORE_INDIVIDUALPROGRESSION_H
+    uint8 progression = GetHighestOnlineProgression();
+    if (progression < PROGRESSION_PRE_TBC)
+    {
+        expansion = 0; // VANILLA
+    }
+    else if (progression < PROGRESSION_TBC_TIER_5)
+    {
+        expansion = 1; // TBC
+    }
+    #endif
+
     // Use configured creature entries - spawn OPPOSITE faction as attackers
-    uint32 minionEntry = isAllianceCity ? g_CreatureHordeMinion : g_CreatureAllianceMinion;
-    uint32 eliteEntry = isAllianceCity ? g_CreatureHordeElite : g_CreatureAllianceElite;
-    uint32 miniBossEntry = isAllianceCity ? g_CreatureHordeMiniBoss : g_CreatureAllianceMiniBoss;
+    //default mod creatures (HYJAL)
+    uint32 minionEntry;
+    uint32 eliteEntry;
+    uint32 miniBossEntry;
+    switch (expansion)
+    {
+    case 0: // VANILLA
+        //default mod creatures (HYJAL)
+        // TODO: make some custom ones, OR find which guard NPCS are being used in cities in individual progression
+        // Custom ones has the benefit of tweaking stats, but requires adding stuff to the DB (potential clash with other custom content)
+		// ALSO CONSIDER: perhaps just modifying level would be fine?
+		// 					try it out and see if health/power needs adjusted separately
+        minionEntry = isAllianceCity ? g_CreatureHordeMinion : g_CreatureAllianceMinion;
+        eliteEntry = isAllianceCity ? g_CreatureHordeElite : g_CreatureAllianceElite;
+        miniBossEntry = isAllianceCity ? g_CreatureHordeMiniBoss : g_CreatureAllianceMiniBoss;
+        break;
+    case 1: // TBC
+        //default mod creatures (HYJAL)
+        minionEntry = isAllianceCity ? g_CreatureHordeMinion : g_CreatureAllianceMinion;
+        eliteEntry = isAllianceCity ? g_CreatureHordeElite : g_CreatureAllianceElite;
+        miniBossEntry = isAllianceCity ? g_CreatureHordeMiniBoss : g_CreatureAllianceMiniBoss;
+        break;
+    default: // WOTLK
+        minionEntry = isAllianceCity ? g_CreatureHordeMinion : g_CreatureAllianceMinion;
+        eliteEntry = isAllianceCity ? g_CreatureHordeElite : g_CreatureAllianceElite;
+        miniBossEntry = isAllianceCity ? g_CreatureHordeMiniBoss : g_CreatureAllianceMiniBoss;
+    }
+
+    
     
     // Randomly select a city leader from the opposing faction's leader pool
     uint32 leaderEntry;
