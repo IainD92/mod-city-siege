@@ -74,7 +74,7 @@ CitySiege.Stormwind.Enabled = 1
 #        Description: Enable siege events in Ironforge.
 #        Default:     1 (enabled)
 #                     Valid values: 0 (disabled) / 1 (enabled)
-CitySiege.Ironforge.Enabled = 1
+CitySiege.Ironforge.Enabled = 0
 
 #
 #    CitySiege.Darnassus.Enabled
@@ -202,9 +202,9 @@ CitySiege.Stormwind.LeaderZ = 122.476685
 #    CitySiege.Ironforge.LeaderX/Y/Z
 #        Description: Location of the city leader (King Magni Bronzebeard) for siege targeting.
 #        Default:     -4981.25, -881.542, 501.660
-CitySiege.Ironforge.LeaderX = -4865.73
-CitySiege.Ironforge.LeaderY = -1022.67
-CitySiege.Ironforge.LeaderZ = 505.798
+CitySiege.Ironforge.LeaderX = -4981.25
+CitySiege.Ironforge.LeaderY = -881.542
+CitySiege.Ironforge.LeaderZ = 501.660
 
 #
 #    CitySiege.Darnassus.LeaderX/Y/Z
@@ -353,77 +353,7 @@ CitySiege.Stormwind.Waypoint14.Z = 105.53
 #    CitySiege.Ironforge.WaypointCount
 #        Description: Number of waypoints for Ironforge siege path.
 #        Default:     0 (direct path - add waypoints if needed)
-CitySiege.Ironforge.WaypointCount = 14
-
-# Waypoint 1 - bottom of hill
-CitySiege.Ironforge.Waypoint1.X = -5254.889
-CitySiege.Ironforge.Waypoint1.Y = -505.95538
-CitySiege.Ironforge.Waypoint1.Z = 386.11215
-
-# Waypoint 2 - middle of hill
-CitySiege.Ironforge.Waypoint2.X = -5174.746
-CitySiege.Ironforge.Waypoint2.Y = -739.80365
-CitySiege.Ironforge.Waypoint2.Z = 448.72293
-
-# Waypoint 3 - top of hill
-CitySiege.Ironforge.Waypoint3.X = -5049.669
-CitySiege.Ironforge.Waypoint3.Y = -783.28705
-CitySiege.Ironforge.Waypoint3.Z = 494.9909
-
-# Waypoint 4 - main doorway
-CitySiege.Ironforge.Waypoint4.X = -4979.4814
-CitySiege.Ironforge.Waypoint4.Y = -883.5199
-CitySiege.Ironforge.Waypoint4.Z = 501.64996
-
-# Waypoint 5 - left corridor
-CitySiege.Ironforge.Waypoint5.X = -4921.0083
-CitySiege.Ironforge.Waypoint5.Y = -859.6807
-CitySiege.Ironforge.Waypoint5.Z = 501.6601
-
-# Waypoint 6 - commons
-CitySiege.Ironforge.Waypoint6.X = -4929.8237
-CitySiege.Ironforge.Waypoint6.Y = -945.3753
-CitySiege.Ironforge.Waypoint6.Z = 501.6026
-
-# Waypoint 7 - Millitary Ward
-CitySiege.Ironforge.Waypoint7.X = -4929.8237
-CitySiege.Ironforge.Waypoint7.Y = -945.3753
-CitySiege.Ironforge.Waypoint7.Z = 501.6026
-
-# Waypoint 8 - The Great Forge SE
-CitySiege.Ironforge.Waypoint8.X = -4877.976
-CitySiege.Ironforge.Waypoint8.Y = -1115.1315
-CitySiege.Ironforge.Waypoint8.Z = 502.2126
-
-# Waypoint 9 - Hall of Explorers
-CitySiege.Ironforge.Waypoint9.X = -4715.561
-CitySiege.Ironforge.Waypoint9.Y = -1204.0083
-CitySiege.Ironforge.Waypoint9.Z = 501.6601
-
-# Waypoint 10 - Forlorn Cavern
-CitySiege.Ironforge.Waypoint10.X = -4625.934
-CitySiege.Ironforge.Waypoint10.Y = -1111.749
-CitySiege.Ironforge.Waypoint10.Z = 501.32764
-
-# Waypoint 11 - The Mystic Ward
-CitySiege.Ironforge.Waypoint11.X = -4655.048
-CitySiege.Ironforge.Waypoint11.Y = -976.9912
-CitySiege.Ironforge.Waypoint11.Z = 501.65848
-
-# Waypoint 12 - The Great Forge NW
-CitySiege.Ironforge.Waypoint12.X = -4773.3384
-CitySiege.Ironforge.Waypoint12.Y = -1023.7683
-CitySiege.Ironforge.Waypoint12.Z = 502.2126
-
-# Waypoint 13 - The Great Forge NE
-CitySiege.Ironforge.Waypoint13.X = -4758.7554
-CitySiege.Ironforge.Waypoint13.Y = -1153.2535
-CitySiege.Ironforge.Waypoint13.Z = 502.2128
-
-# Waypoint 14 - The High Seat
-CitySiege.Ironforge.Waypoint14.X = -4848.948
-CitySiege.Ironforge.Waypoint14.Y = -1042.5144
-CitySiege.Ironforge.Waypoint14.Z = 502.18854
+CitySiege.Ironforge.WaypointCount = 0
 
 #
 #    CitySiege.Darnassus.WaypointCount
